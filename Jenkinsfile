@@ -5,6 +5,10 @@ pipeline {
         nodejs 'Node20'
     }
 
+    environment {
+        PATH = "${tool 'Node20'}/bin:${env.PATH}"
+    }
+
     stages {
 
         stage('Clean Workspace') {
@@ -23,6 +27,20 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
+            }
+        }
+
+        stage('Install PM2 (Jenkins Environment)') {
+            steps {
+                sh '''
+                    echo "Checking PM2..."
+                    if ! command -v pm2 >/dev/null 2>&1; then
+                        echo "Installing PM2 globally..."
+                        npm install -g pm2
+                    else
+                        echo "PM2 already installed"
+                    fi
+                '''
             }
         }
 
